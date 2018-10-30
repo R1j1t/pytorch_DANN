@@ -13,11 +13,23 @@
 ### Data
 > In this work, MNIST and MNIST_M datasets are used in experiments. MNIST dataset  
 > can be downloaded with `torchvision.datasets`. MINIST_M dataset can be downloa-  
-> ded at [Yaroslav Ganin's homepage][3]. Then you can extract the file to your data dire-  
+> ded at [Yaroslav Ganin's homepage][3] or direct [Google Drive link](4). Then you can extract the file to your data dire-  
 > ctory and run the `preprocess.py` to make the directory able to be used with  
 > `torchvision.datasets.ImageFolder`:
-```
-python preprocess.py
+```bash
+# Download MNIST_M dataset to data folder 
+cd data
+
+## unzip the files
+tar -zvxf ./mnist_m.tar.gz
+# IF the above command doesn't work use the following
+tar -vxf mnist_m.tar.gz
+
+# To process the MNIST_M dataset
+python3 ./util/preprocess.py
+
+# To Download the MNIST dataset just run the main.py script
+python3 main.py
 ```
 
 ### Experiments
@@ -40,3 +52,4 @@ python preprocess.py
 [1]:https://arxiv.org/pdf/1505.07818.pdf
 [2]:https://github.com/pumpikano/tf-dann
 [3]:http://yaroslav.ganin.net/
+[4]:https://drive.google.com/file/d/0B_tExHiYS-0veklUZHFYT19KYjg/view
