@@ -25,19 +25,25 @@ class Extractor(nn.Module):
 
     def __init__(self):
         super(Extractor, self).__init__()
-        self.conv1 = nn.Conv2d(3, 64, kernel_size= 5)
-        self.bn1 = nn.BatchNorm2d(64)
-        self.conv2 = nn.Conv2d(64, 50, kernel_size= 5)
-        self.bn2 = nn.BatchNorm2d(50)
-        self.conv2_drop = nn.Dropout2d()
+        self.emb = nn.Embedding(50000, 100) #50000=vocab_size, 100=embedding_dim
+        # self.emb.weight.data.copy_(pretrained_vec)  # load pretrained embeddings
+        # self.bn1 = nn.BatchNorm2d(64)
+        self.lstm = nn.LSTM(100, 100)
+        self.dense = nn.Linear(100,100)
+        # self.bn2 = nn.BatchNorm2d(50)
+        # self.conv2_drop = nn.Dropout2d()
 
     def forward(self, input):
-        input = input.expand(input.data.shape[0], 3, 28, 28)
-        x = F.relu(F.max_pool2d(self.bn1(self.conv1(input)), 2))
-        x = F.relu(F.max_pool2d(self.conv2_drop(self.bn2(self.conv2(x))), 2))
-        x = x.view(-1, 50 * 4 * 4)
+        embeds = self.word_embeddings(input)
+        lstm_out, self.hidden = self.lstm(embeds.view(len(input), 1, -1), self.hidden)
+        feature = self.dense(lstm_out.view(len(input),-1))
 
-        return x
+        # input = input.expand(input.data.shape[0], 3, 28, 28)
+        # x = F.relu(F.max_pool2d(self.bn1(self.conv1(input)), 2))
+        # x = F.relu(F.max_pool2d(self.conv2_drop(self.bn2(self.conv2(x))), 2))
+        # x = x.view(-1, 50 * 4 * 4)
+
+        return feature
 
 class Class_classifier(nn.Module):
 
