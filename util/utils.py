@@ -1,6 +1,7 @@
 import torchvision
 import torch
 from torch.utils.data import DataLoader
+import torch.utils.data as TensorDataset
 from torchvision import datasets, transforms
 
 from train import params
@@ -13,6 +14,70 @@ plt.switch_backend('agg')
 import numpy as np
 import os, time
 from data import SynDig
+
+
+def train_test_loader(dataset):
+    ## Part of https://github.com/bentrevett/pytorch-sentiment-analysis/blob/master/1%20-%20Simple%20Sentiment%20Analysis.ipynb
+    SEED = 1234
+
+    torch.manual_seed(SEED)
+    torch.cuda.manual_seed(SEED)
+    torch.backends.cudnn.deterministic = True
+
+    TEXT = data.Field(tokenize='spacy')
+    LABEL = data.LabelField(dtype=torch.float)
+
+    if dataset == 'IMDB':
+        train_data, test_data = datasets.IMDB.splits(TEXT, LABEL)
+
+        print(f'Number of training examples: {len(train_data)}')
+        print(f'Number of testing examples: {len(test_data)}')
+        
+        print(vars(train_data.examples[0]))
+
+        print(f'Number of training examples: {len(train_data)}')
+        print(f'Number of validation examples: {len(valid_data)}')
+        print(f'Number of testing examples: {len(test_data)}')
+
+        TEXT.build_vocab(train_data, max_size=25000)
+        LABEL.build_vocab(train_data)
+
+        print(f"Unique tokens in TEXT vocabulary: {len(TEXT.vocab)}")
+        print(f"Unique tokens in LABEL vocabulary: {len(LABEL.vocab)}")
+        
+        print(TEXT.vocab.freqs.most_common(20))
+        print(LABEL.vocab.stoi)
+
+        train_iter, test_iter = data.BucketIterator.splits(
+            (train, test), batch_size=30, device=0)
+
+        return train_iter, test_iter
+    
+    elif dataset == 'SST':
+        train_data, test_data = datasets.SST.splits(TEXT, LABEL)
+
+        print(f'Number of training examples: {len(train_data)}')
+        print(f'Number of testing examples: {len(test_data)}')
+        
+        print(vars(train_data.examples[0]))
+
+        print(f'Number of training examples: {len(train_data)}')
+        print(f'Number of validation examples: {len(valid_data)}')
+        print(f'Number of testing examples: {len(test_data)}')
+
+        TEXT.build_vocab(train_data, max_size=25000)
+        LABEL.build_vocab(train_data)
+
+        print(f"Unique tokens in TEXT vocabulary: {len(TEXT.vocab)}")
+        print(f"Unique tokens in LABEL vocabulary: {len(LABEL.vocab)}")
+        
+        print(TEXT.vocab.freqs.most_common(20))
+        print(LABEL.vocab.stoi)
+
+        train_iter, test_iter = data.BucketIterator.splits(
+            (train, test), batch_size=30, device=0)
+
+        return train_iter, test_iter
 
 
 def get_train_loader(dataset):
@@ -32,7 +97,7 @@ def get_train_loader(dataset):
         dataloader = DataLoader(dataset= data, batch_size= params.batch_size, shuffle= True)
 
 
-    elif dataset == 'MNIST_M':
+    elif dataset == 'mnist_m':
         transform = transforms.Compose([
             transforms.RandomCrop((28)),
             transforms.ToTensor(),
@@ -90,7 +155,7 @@ def get_test_loader(dataset):
                               download= True)
 
         dataloader = DataLoader(dataset= data, batch_size= params.batch_size, shuffle= True)
-    elif dataset == 'MNIST_M':
+    elif dataset == 'mnist_m':
         transform = transforms.Compose([
             # transforms.RandomCrop((28)),
             transforms.CenterCrop((28)),
