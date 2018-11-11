@@ -1,0 +1,5 @@
+# Skip dataset while commiting
+.data/*
+
+# Skip mac specifics
+.DS_Store
